@@ -54,4 +54,8 @@ build/
 
 # OS files
 .DS_Store
-Thumbs.db 
+Thumbs.db
+
+# Large binary files
+*.node
+next-swc.win32-x64-msvc.node 
