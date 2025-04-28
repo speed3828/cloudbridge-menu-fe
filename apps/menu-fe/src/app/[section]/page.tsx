@@ -1,25 +1,16 @@
-import { Metadata } from 'next'
-import { useRouter } from 'next/router';
+'use client';
+
+import * as React from 'react';
+import { usePathname } from 'next/navigation';
 import { SECTIONS } from '@/config/sections';
 import { useStoreList } from '@/hooks/useStoreList';
 import StoreCard from '@/components/StoreCard';
 import SkeletonList from '@/components/SkeletonList';
 import MenuTabs from '@/components/MenuTabs';
 
-export const metadata: Metadata = {
-  title: 'Menu Section',
-  description: 'Browse menu items by section',
-}
-
-interface SectionPageProps {
-  params: {
-    section: string
-  }
-}
-
 export default function SectionPage() {
-  const { query } = useRouter();
-  const section = (query.section as string) ?? 'store';
+  const pathname = usePathname() ?? '';
+  const section = pathname.split('/').pop() ?? 'store';
   const { data, isLoading } = useStoreList(section);
 
   return (
