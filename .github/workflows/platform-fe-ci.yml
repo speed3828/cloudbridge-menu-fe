@@ -1,0 +1,45 @@
+name: Platform FE CI
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'apps/platform-fe/**'
+      - 'helm/platform-fe/**'
+      - '.github/workflows/platform-fe-ci.yml'
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          
+      - name: Install dependencies
+        run: |
+          cd apps/platform-fe
+          npm install
+          
+      - name: Build
+        run: |
+          cd apps/platform-fe
+          npm run build
+          
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v4
+        with:
+          context: ./apps/platform-fe
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/platform-fe:${{ github.sha }}
+          
+      - name: Deploy to production
+        run: |
+          export SHA=${{ github.sha }}
+          helm upgrade --install platform-fe ./helm/platform-fe \
+            --namespace cloudbridge-prod \
+            --set image.repository=${{ secrets.DOCKERHUB_USERNAME }}/platform-fe \
+            --set image.tag=$SHA 

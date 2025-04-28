@@ -1,0 +1,13 @@
+apiVersion: v2
+name: cloudbridge-platform
+description: Helm chart for Cloudbridge Platform
+type: application
+version: 0.1.0
+appVersion: "0.1.0"
+dependencies:
+  - name: platform-main
+    version: 0.1.0
+    condition: platform-main.enabled
+  - name: platform-menu
+    version: 0.1.0
+    condition: platform-menu.enabled 

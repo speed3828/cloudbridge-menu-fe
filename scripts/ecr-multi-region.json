@@ -1,0 +1,12 @@
+{
+    "rules": [
+        {
+            "destinations": [
+                {
+                    "region": "ap-southeast-1",
+                    "registryId": "*"
+                }
+            ]
+        }
+    ]
+} 

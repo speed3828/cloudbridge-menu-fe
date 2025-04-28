@@ -1,0 +1,26 @@
+name: cloudbridge-menu-fe
+version: 1.0.0
+
+settings:
+  port: 4200
+  autosave: true
+  diff_preview: false
+  confirm_each: false
+
+exclude:
+  - public/
+  - dist/
+  - .next/
+  - node_modules/
+  - coverage/
+
+development:
+  server:
+    host: localhost
+    port: 4200
+    
+build:
+  output: dist/
+  
+environment:
+  node: ">=18.0.0" 

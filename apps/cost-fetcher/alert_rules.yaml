@@ -1,0 +1,56 @@
+groups:
+  - name: AWS Cost Alerts
+    folder: Cloud Costs
+    interval: 1h
+    rules:
+      - alert: Monthly Budget Overrun
+        expr: |
+          sum(
+            rate(aws_costs_total{currency="USD"}[30d])
+          ) > 300
+        for: 1h
+        labels:
+          severity: warning
+          category: costs
+        annotations:
+          summary: AWS 월간 비용이 예산을 초과했습니다
+          description: |
+            현재 월간 비용: ${{ $value }}
+            예산 한도: $300
+      
+      - alert: Daily Cost Spike
+        expr: |
+          sum(
+            rate(aws_costs_total{currency="USD"}[1d])
+          ) > 20
+        for: 30m
+        labels:
+          severity: warning
+          category: costs
+        annotations:
+          summary: AWS 일일 비용이 급증했습니다
+          description: |
+            최근 24시간 비용: ${{ $value }}
+            일일 한도: $20
+      
+      - alert: Service Cost Anomaly
+        expr: |
+          abs(
+            (
+              rate(aws_costs_total{currency="USD"}[1d])
+              - 
+              rate(aws_costs_total{currency="USD"}[7d])
+            )
+            /
+            rate(aws_costs_total{currency="USD"}[7d])
+          ) > 0.3
+        for: 1h
+        labels:
+          severity: warning
+          category: costs
+        annotations:
+          summary: 서비스별 비용이 비정상적으로 변동했습니다
+          description: |
+            서비스: {{ $labels.service }}
+            변동률: {{ $value | printf "%.2f" }}%
+            기준: 7일 평균 대비 30% 이상 변동 

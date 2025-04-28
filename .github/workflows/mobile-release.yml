@@ -1,0 +1,94 @@
+name: Mobile App Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build-and-deploy:
+    name: Build and Deploy Mobile Apps
+    runs-on: macos-latest  # iOS 빌드를 위해 macOS 러너 사용
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'npm'
+          
+      - name: Install dependencies
+        run: |
+          npm ci
+          gem install fastlane
+          
+      - name: Setup Java for Android
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+          
+      - name: Setup Xcode
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: '14.3'
+          
+      - name: Setup Ruby for Fastlane
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.0'
+          bundler-cache: true
+          
+      - name: Build Web Assets
+        run: |
+          npm run build
+          npx cap sync
+          
+      - name: Decode Android Service Account
+        run: |
+          echo "${{ secrets.ANDROID_SERVICE_ACCOUNT_JSON }}" | base64 -d > android/fastlane/service-account.json
+          
+      - name: Setup Fastlane Match (iOS)
+        env:
+          MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
+          FASTLANE_APPLE_ID: ${{ secrets.FASTLANE_APPLE_ID }}
+          FASTLANE_APPLE_PASSWORD: ${{ secrets.FASTLANE_APPLE_PASSWORD }}
+          FASTLANE_SESSION: ${{ secrets.FASTLANE_SESSION }}
+        run: |
+          cd ios
+          fastlane match development --readonly
+          fastlane match appstore --readonly
+          
+      - name: Deploy to Play Store (Android)
+        env:
+          ANDROID_SERVICE_ACCOUNT_JSON: ${{ secrets.ANDROID_SERVICE_ACCOUNT_JSON }}
+        run: |
+          cd android
+          fastlane deploy_play
+          
+      - name: Deploy to TestFlight (iOS)
+        env:
+          FASTLANE_APPLE_ID: ${{ secrets.FASTLANE_APPLE_ID }}
+          FASTLANE_APPLE_PASSWORD: ${{ secrets.FASTLANE_APPLE_PASSWORD }}
+          FASTLANE_SESSION: ${{ secrets.FASTLANE_SESSION }}
+        run: |
+          cd ios
+          fastlane deploy_tf
+          
+      - name: Notify Slack
+        if: always()
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_ALERT_URL }}
+        run: |
+          VERSION=${GITHUB_REF#refs/tags/}
+          curl -X POST -H 'Content-type: application/json' --data "{
+            \"text\": \"🚀 모바일 앱 배포 결과 ($VERSION)\n
+            • 상태: ${{ job.status }}\n
+            • Android: Play Store Internal Testing\n
+            • iOS: TestFlight\n
+            • 커밋: ${{ github.sha }}\n
+            • 워크플로우: ${{ github.workflow }}\"
+          }" $SLACK_WEBHOOK_URL 

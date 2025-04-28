@@ -1,0 +1,52 @@
+# Global values
+global:
+  environment: development
+
+# Platform Main API
+platform-main:
+  enabled: true
+  replicaCount: 1
+  image:
+    repository: cloudbridge/platform-main
+    tag: latest
+    pullPolicy: IfNotPresent
+  service:
+    type: ClusterIP
+    port: 4000
+  resources:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
+  env:
+    - name: GOOGLE_CLIENT_ID
+      value: "your-google-client-id"
+    - name: GOOGLE_CLIENT_SECRET
+      value: "your-google-client-secret"
+    - name: NAVER_CLIENT_ID
+      value: "your-naver-client-id"
+    - name: NAVER_CLIENT_SECRET
+      value: "your-naver-client-secret"
+    - name: SECRET_KEY
+      value: "your-secret-key"
+
+# Platform Menu API
+platform-menu:
+  enabled: true
+  replicaCount: 1
+  image:
+    repository: cloudbridge/platform-menu
+    tag: latest
+    pullPolicy: IfNotPresent
+  service:
+    type: ClusterIP
+    port: 4100
+  resources:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi 

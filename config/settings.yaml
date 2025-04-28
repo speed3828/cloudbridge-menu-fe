@@ -1,0 +1,43 @@
+# CloudBridge Platform Settings
+
+# Role Definitions
+roles:
+  cursor: "시공 인턴: 스캐폴딩·보일러플레이트만 자동 생성"
+  gpt_o3: "감독: 코드 리뷰·버그 지적·보안 체크"
+  claude: "시니어: 성능 리팩터·가독성 개선"
+  human: "오너: 핵심 비즈니스 로직·배포·보안 최종 승인"
+
+# Policy Settings
+policies:
+  autosave: off
+  port_lock: [4000, 4100]
+  no_package_update: true
+  no_public_api_call: true
+  diff_preview: on
+  commit_prefix: "[AUTO] "
+  max_files_per_run: 20
+  restrict_paths: ["apps/", "helm/", "scripts/"]
+
+# Checkpoints
+checkpoints:
+  stages: ["init", "auth", "ingress", "helm"]
+  command: "echo '[CHECK] 변경 diff 검토 → 문제 없으면 y 입력'"
+  confirm: true
+
+# Error Handling
+error_handling:
+  on_error:
+    command: "mkdir -p .ci_error && cp $CURSOR_LAST_LOG .ci_error/$(date +%Y%m%d_%H%M%S)_error.log"
+    rollback_cmd: "git reset --hard HEAD~1"
+    notify_cmd: "curl -X POST -H 'Content-Type: application/json' -d '{\"text\":\"🚨 Cursor Error on $WORKSPACE: $CURSOR_ERROR_MSG\"}' $SLACK_WEBHOOK_URL"
+    pause: true
+  
+  error_messages:
+    build_fail: "[BUILD] 컴파일 실패 – 로그 확인"
+    test_fail: "[TEST] 실패 – failed_tests.txt 확인"
+    policy_violation: "[POLICY] 지침 위반 – 설정 수정"
+    lint_fail: "[LINT] 스타일 오류 – black/isort 실행"
+  
+  retry:
+    max_retry: 2
+    backoff_sec: 30 

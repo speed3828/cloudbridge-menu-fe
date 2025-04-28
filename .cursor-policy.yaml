@@ -1,0 +1,17 @@
+# Cursor Automation Policy Configuration
+
+settings:
+  autosave: true                  # 자동 저장 활성화
+  preview_mode: false             # 미리보기 모드 비활성화
+  require_confirmation: false     # 확인 단계 비활성화
+  auto_complete:
+    enabled: true
+    max_suggestions: 5            # 코드 자동 완성 활성화
+  execution:
+    allow_parallel: true          # 병렬 실행 허용
+    max_files_per_run: 20         # 최대 파일 수 제한
+  error_handling:
+    pause_on_policy_violation: false # 정책 위반 시 일시 중지 비활성화
+
+# Policy version: 1.0.0
+# Last updated: Current timestamp 

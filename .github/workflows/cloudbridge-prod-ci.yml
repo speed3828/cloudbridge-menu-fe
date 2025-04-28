@@ -1,0 +1,102 @@
+name: CloudBridge Production CI/CD
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+env:
+  AWS_REGION: ap-northeast-2
+  NPM_REGISTRY: https://npm.pkg.github.com
+  PYPI_REGISTRY: https://pypi.autoriseinsight.co.kr/simple
+
+jobs:
+  # ... existing jobs ...
+
+  docs-sdk-deploy:
+    needs: [build, test]
+    runs-on: ubuntu-latest
+    environment: production
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          registry-url: ${{ env.NPM_REGISTRY }}
+      
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pyyaml openapi-generator-cli twine
+          npm install -g @redocly/cli
+      
+      - name: Extract OpenAPI specs
+        run: |
+          python scripts/openapi_export.py \
+            apps/platform-main/main.py \
+            apps/platform-menu/main.py \
+            docs/openapi
+      
+      - name: Generate Redoc site
+        run: |
+          redocly build-docs \
+            docs/openapi/openapi.yaml \
+            --config docs/redoc-config.yaml \
+            --output docs/site/index.html
+      
+      - name: Generate TypeScript SDK
+        run: |
+          openapi-generator-cli generate \
+            -i docs/openapi/openapi.yaml \
+            -g typescript-fetch \
+            -o sdk/ts \
+            --additional-properties=npmName=@cloudbridge/sdk,npmVersion=${{ github.ref_name }}
+      
+      - name: Generate Python SDK
+        run: |
+          openapi-generator-cli generate \
+            -i docs/openapi/openapi.yaml \
+            -g python \
+            -o sdk/py \
+            --additional-properties=packageName=cloudbridge_sdk,packageVersion=${{ github.ref_name }}
+      
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+      
+      - name: Deploy documentation
+        run: |
+          aws s3 sync docs/site s3://cloudbridge-api-docs --delete
+          aws cloudfront create-invalidation \
+            --distribution-id ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }} \
+            --paths "/*"
+      
+      - name: Publish TypeScript SDK
+        run: |
+          cd sdk/ts
+          echo "//npm.pkg.github.com/:_authToken=${{ secrets.GITHUB_TOKEN }}" > .npmrc
+          npm publish --access restricted
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Publish Python SDK
+        run: |
+          cd sdk/py
+          python setup.py sdist bdist_wheel
+          twine upload \
+            --repository-url ${{ env.PYPI_REGISTRY }} \
+            --username ${{ secrets.PYPI_USERNAME }} \
+            --password ${{ secrets.PYPI_PASSWORD }} \
+            dist/* 

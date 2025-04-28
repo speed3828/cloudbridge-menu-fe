@@ -1,0 +1,49 @@
+version: '3.8'
+
+services:
+  platform-main:
+    build:
+      context: ../../apps/platform-main
+      dockerfile: Dockerfile
+    container_name: cloudbridge-platform-main
+    ports:
+      - "4000:4000"
+    environment:
+      - MONGO_URL=mongodb://mongo:27017/cloudbridge
+      - REDIS_URL=redis://redis:6379
+      - SECRET_KEY=local_development_secret_key
+      - GOOGLE_CLIENT_ID=your-google-client-id
+      - GOOGLE_CLIENT_SECRET=your-google-client-secret
+      - NAVER_CLIENT_ID=your-naver-client-id
+      - NAVER_CLIENT_SECRET=your-naver-client-secret
+    depends_on:
+      - mongo
+      - redis
+    restart: always
+    networks:
+      - cloudbridge-network
+    volumes:
+      - ../../apps/platform-main:/app
+
+  platform-menu:
+    build:
+      context: ../../apps/platform-menu
+      dockerfile: Dockerfile
+    container_name: cloudbridge-platform-menu
+    ports:
+      - "4100:4100"
+    environment:
+      - POSTGRES_URL=postgresql+asyncpg://cloudbridge:pass@postgres:5432/cloudbridge
+      - REDIS_URL=redis://redis:6379
+    depends_on:
+      - postgres
+      - redis
+    restart: always
+    networks:
+      - cloudbridge-network
+    volumes:
+      - ../../apps/platform-menu:/app
+
+networks:
+  cloudbridge-network:
+    external: true 
