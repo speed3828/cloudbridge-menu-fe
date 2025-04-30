@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://menu.autoriseinsight.co.kr/sitemap.xml 

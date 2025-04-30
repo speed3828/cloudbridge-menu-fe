@@ -1,0 +1,5 @@
+roles:
+  CURSOR: "현장 엔지니어: GPT 패치만 적용"
+  GPT_O3: "진단/패치 전문가: MCP 연결 오류 분석 + 수정 YAML/명령 제안" 
+  CLAUDE: "리뷰어: 패치 코드 세이프티 검토"
+  HUMAN: "오너: 승인 y/n" 

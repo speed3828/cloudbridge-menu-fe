@@ -1,0 +1,43 @@
+###############################################################################
+# 🔒 전체 안정화 워크플로 – 역할·정책·루틴 등록
+###############################################################################
+
+# 역할 정의
+roles:
+  CURSOR: "실행 담당: 패치 적용·테스트"
+  GPT_O3: "품질 담당: 오류·보안 패치 자동 제안"
+  CLAUDE: "리팩터 담당: 성능·가독성 개선 코드 제안"
+  HUMAN: "오너: 승인 y/n"
+
+# 정책 설정
+policy:
+  AUTOSAVE: on
+  STOP_ON_ERROR: true
+  PREVIEW_ONLY: true
+  CONFIRM_EACH: true
+
+# 체크포인트
+checkpoints:
+  - trigger: BEFORE=*
+    command: "bash scripts/quality_check.sh"
+    confirm: false
+  
+  - trigger: AFTER=review:auto-fix
+    command: "run apply:patch --auto && run show:diff"
+    confirm: true
+  
+  - trigger: AFTER=scripts/quality_check.sh
+    command: |
+      git add .
+      git commit -m 'chore: stable pass on $(date +%F_%T)'
+      TAG=stable-$(date +%Y%m%d%H%M)
+      git tag -a $TAG -m 'auto stable tag'
+      git push origin main --follow-tags
+      curl -X POST -H 'Content-Type: application/json' -d '{\"text\":\"✅ 전체 안정화 통과 [$TAG]\"}' $SLACK_WEBHOOK_URL
+    confirm: false
+
+# 오류 처리
+on_error:
+  command: "run review:auto-fix --model=gpt-4o --log=$CURSOR_LAST_LOG"
+  rollback_cmd: "git reset --hard HEAD~1"
+  pause: true 

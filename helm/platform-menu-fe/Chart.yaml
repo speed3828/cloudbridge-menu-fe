@@ -1,6 +1,6 @@
 apiVersion: v2
 name: platform-menu-fe
-description: A Helm chart for Menu Frontend
+description: A Helm chart for Cloudbridge Menu Frontend
 type: application
 version: 0.1.0
 appVersion: "1.0.0" 

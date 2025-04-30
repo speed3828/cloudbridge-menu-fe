@@ -1,7 +1,7 @@
 replicaCount: 1
 
 image:
-  repository: platform-menu-fe
+  repository: cloudbridge-menu-fe
   tag: latest
   pullPolicy: IfNotPresent
 
