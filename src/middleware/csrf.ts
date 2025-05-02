@@ -1,12 +1,20 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-import { randomBytes } from 'crypto';
 
 const CSRF_TOKEN_COOKIE = 'csrf_token';
 const CSRF_HEADER = 'X-CSRF-Token';
 
 export function generateCSRFToken(): string {
-  return randomBytes(32).toString('hex');
+  // Edge Runtime compatible crypto API (works in both Edge and Node.js environments)
+  const array = new Uint8Array(32);
+  
+  // crypto is available in all Next.js environments (including Edge)
+  crypto.getRandomValues(array);
+  
+  // Convert to hex string
+  return Array.from(array)
+    .map(b => b.toString(16).padStart(2, '0'))
+    .join('');
 }
 
 export function csrfMiddleware(request: NextRequest) {

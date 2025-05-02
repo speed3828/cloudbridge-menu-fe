@@ -1,30 +1,44 @@
-import type { Metadata } from 'next';
+import * as React from 'react';
 import { Inter } from 'next/font/google';
 import './globals.css';
-import ErrorBoundary from '@/components/ErrorBoundary';
+import FunctionalErrorBoundary from '@/components/FunctionalErrorBoundary';
 import { ToastProvider } from '@/contexts/ToastContext';
 import { PerformanceMonitor } from '@/components/PerformanceMonitor';
+import { QueryProvider } from '@/providers/QueryProvider';
+import { NetworkErrorHandler } from '@/components/NetworkErrorHandler';
+import '@/config/axios-config';
 
 const inter = Inter({ subsets: ['latin'] });
 
-export const metadata: Metadata = {
+// Define a local interface for metadata
+interface PageMetadata {
+  title?: string;
+  description?: string;
+  [key: string]: any;
+}
+
+export const metadata: PageMetadata = {
   title: 'Cloudbridge Menu',
   description: 'Interactive menu platform powered by Cloudbridge',
 };
 
-export default function RootLayout({
-  children,
-}: {
+interface RootLayoutProps {
   children: React.ReactNode;
-}) {
+}
+
+export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <html lang="ko">
       <body className={inter.className}>
-        <ErrorBoundary fallback={<div>Something went wrong</div>} children={children}>
-          <ToastProvider children={children}>
-            <PerformanceMonitor />
+        <FunctionalErrorBoundary fallback={<div>Something went wrong</div>}>
+          <ToastProvider>
+            <QueryProvider>
+              <NetworkErrorHandler />
+              {children}
+              <PerformanceMonitor />
+            </QueryProvider>
           </ToastProvider>
-        </ErrorBoundary>
+        </FunctionalErrorBoundary>
       </body>
     </html>
   );

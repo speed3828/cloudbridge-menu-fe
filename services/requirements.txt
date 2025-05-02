@@ -1,0 +1,14 @@
+# Core dependencies
+feedparser==6.0.10
+flask==2.3.3
+requests==2.31.0
+schedule==1.2.0
+
+# Google Sheets API (for DAO implementation)
+google-api-python-client==2.97.0
+google-auth==2.23.0
+google-auth-httplib2==0.1.1
+google-auth-oauthlib==1.1.0
+
+# Utilities
+python-dotenv==1.0.0 

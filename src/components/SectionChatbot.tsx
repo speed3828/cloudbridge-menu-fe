@@ -4,7 +4,7 @@ interface SectionChatbotProps {
   url: string
 }
 
-const SectionChatbot: React.FC<SectionChatbotProps> = ({ url }) => {
+function SectionChatbot({ url }: SectionChatbotProps): JSX.Element {
   return (
     <div className="fixed bottom-4 right-4">
       <iframe

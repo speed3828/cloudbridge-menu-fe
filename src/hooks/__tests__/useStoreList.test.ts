@@ -1,3 +1,7 @@
+/// <reference path="./useStoreList.test.d.ts" />
+/// <reference types="jest" />
+
+import '@testing-library/jest-dom';
 import { renderHook, waitFor } from '@testing-library/react';
 import { useStoreList } from '../useStoreList';
 import { apiClient } from '@/config/api';
@@ -5,8 +9,8 @@ import { apiClient } from '@/config/api';
 // Mock apiClient
 jest.mock('@/config/api', () => ({
   apiClient: {
-    get: jest.fn(),
-  },
+    get: jest.fn()
+  }
 }));
 
 describe('useStoreList', () => {
@@ -28,11 +32,13 @@ describe('useStoreList', () => {
   ];
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    // Use type assertion to avoid TypeScript error
+    (jest as any).clearAllMocks();
   });
 
   it('fetches stores successfully', async () => {
-    (apiClient.get as jest.Mock).mockResolvedValueOnce({ data: mockStores });
+    // Set up the mock response using type assertion
+    (apiClient.get as any).mockResolvedValueOnce({ data: mockStores });
 
     const { result } = renderHook(() => useStoreList('store'));
 
@@ -48,7 +54,8 @@ describe('useStoreList', () => {
 
   it('handles error when fetching stores', async () => {
     const error = new Error('API Error');
-    (apiClient.get as jest.Mock).mockRejectedValueOnce(error);
+    // Set up the mock error response using type assertion
+    (apiClient.get as any).mockRejectedValueOnce(error);
 
     const { result } = renderHook(() => useStoreList('store'));
 

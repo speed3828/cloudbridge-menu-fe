@@ -1,0 +1,36 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "target": "es2015",
+    "lib": ["dom", "dom.iterable", "esnext", "es2015", "es2015.promise"],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "module": "esnext",
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "preserve",
+    "incremental": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./*"],
+      "react": ["../../node_modules/@types/react"],
+      "next": ["../../node_modules/next"],
+      "next/*": ["../../node_modules/next/*"]
+    },
+    "typeRoots": ["../../node_modules/@types", "./types", "../../src/types"]
+  },
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts",
+    "../../src/types/*.d.ts",
+    "./types/*.d.ts"
+  ],
+  "exclude": ["node_modules"]
+} 

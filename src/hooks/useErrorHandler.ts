@@ -8,6 +8,20 @@ export function useErrorHandler() {
     if (error instanceof Error) {
       // 일반 에러 처리
       console.error('Error:', error.message);
+      
+      // 네트워크 에러 메시지 처리
+      if (error.message.includes('Network Error') || 
+          error.message.includes('Connection failed') ||
+          error.message.includes('Failed to fetch') ||
+          error.message.includes('check your internet connection')) {
+        return '서버 연결에 실패했습니다. 잠시 후 다시 시도해주세요.';
+      }
+      
+      // Request ID 정보가 포함된 에러 메시지 처리
+      if (error.message.includes('Request ID:')) {
+        return '서버 연결에 실패했습니다. 잠시 후 다시 시도해주세요.';
+      }
+      
       return error.message;
     }
 
@@ -30,6 +44,10 @@ export function useErrorHandler() {
           // 서버 에러
           return '서버 오류가 발생했습니다.';
         default:
+          // Request ID가 포함된 에러 메시지 필터링
+          if (apiError.message && apiError.message.includes('Request ID:')) {
+            return '서버 연결에 실패했습니다. 잠시 후 다시 시도해주세요.';
+          }
           return apiError.message || '알 수 없는 오류가 발생했습니다.';
       }
     }

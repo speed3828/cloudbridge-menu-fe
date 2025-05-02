@@ -1,7 +1,7 @@
 'use client';
 
 import { useApiQuery } from './useApi';
-import { Store } from '@/components/StoreCard';
+import { Store } from '@/types/store';
 
 export function useStoreList(section: string) {
   return useApiQuery<Store[]>(['stores', section], `/api/stores/${section}`, {

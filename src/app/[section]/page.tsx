@@ -7,6 +7,7 @@ import { useStoreList } from '@/hooks/useStoreList';
 import StoreCard from '@/components/StoreCard';
 import SkeletonList from '@/components/SkeletonList';
 import MenuTabs from '@/components/MenuTabs';
+import { Store } from '@/types/store';
 
 export default function SectionPage() {
   const pathname = usePathname() ?? '';
@@ -21,7 +22,7 @@ export default function SectionPage() {
         <SkeletonList />
       ) : (
         <div className="grid gap-4 p-4 md:grid-cols-2 lg:grid-cols-3">
-          {data?.map(item => (
+          {data?.map((item: Store) => (
             <StoreCard key={item.id} store={item} />
           ))}
         </div>

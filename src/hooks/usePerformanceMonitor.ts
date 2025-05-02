@@ -4,9 +4,15 @@ import { useEffect, useState } from 'react';
 import { measurePerformance, logPerformanceMetrics, isPerformanceGood, type PerformanceMetrics } from '@/lib/performance';
 import { useToast } from '@/contexts/ToastContext';
 
+interface ToastContextType {
+  showToast: (message: string, type?: 'success' | 'error' | 'info' | 'warning') => void;
+}
+
 export function usePerformanceMonitor() {
   const [metrics, setMetrics] = useState<PerformanceMetrics | null>(null);
-  const { showToast } = useToast();
+  
+  // Use type assertion to help TypeScript understand the structure
+  const toastContext = useToast() as ToastContextType;
 
   useEffect(() => {
     const measureAndLog = async () => {
@@ -15,7 +21,7 @@ export function usePerformanceMonitor() {
       logPerformanceMetrics(performanceMetrics);
 
       if (!isPerformanceGood(performanceMetrics)) {
-        showToast('페이지 로딩이 느립니다. 네트워크 상태를 확인해주세요.', 'warning');
+        toastContext.showToast('페이지 로딩이 느립니다. 네트워크 상태를 확인해주세요.', 'warning');
       }
     };
 
@@ -26,7 +32,7 @@ export function usePerformanceMonitor() {
     const interval = setInterval(measureAndLog, 5 * 60 * 1000);
 
     return () => clearInterval(interval);
-  }, [showToast]);
+  }, [toastContext]);
 
   return { metrics };
 } 

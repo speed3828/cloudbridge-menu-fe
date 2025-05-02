@@ -1,38 +1,64 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import * as React from 'react';
 import { Button } from './ui/Button';
 
+// Define prop and state types without relying on namespace
 interface ErrorBoundaryProps {
   children: React.ReactNode;
   fallback?: React.ReactNode;
 }
 
+interface ErrorBoundaryState {
+  hasError: boolean;
+  error: Error | null;
+  errorInfo: { componentStack: string } | null;
+}
+
 /**
- * 에러 바운더리를 함수형 컴포넌트로 구현하는 대신, 
- * 이 파일에서는 클래스 컴포넌트가 동작할 수 있도록 하기 위한 기능만 구현합니다.
+ * 에러 바운더리 컴포넌트
+ * 애플리케이션 내에서 발생하는 JavaScript 오류를 캐치하고 처리하는 컴포넌트
  */
-class ErrorBoundary extends React.Component<ErrorBoundaryProps> {
-  state = { hasError: false, error: null, errorInfo: null };
-
-  static getDerivedStateFromError(error: Error) {
-    return { hasError: true, error, errorInfo: null };
+class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundaryState> {
+  constructor(props: ErrorBoundaryProps) {
+    super(props);
+    this.state = { 
+      hasError: false, 
+      error: null, 
+      errorInfo: null 
+    };
   }
 
-  componentDidCatch(error: Error, errorInfo: any) {
+  static getDerivedStateFromError(error: Error): ErrorBoundaryState {
+    return { 
+      hasError: true, 
+      error, 
+      errorInfo: null 
+    };
+  }
+
+  componentDidCatch(error: Error, errorInfo: { componentStack: string }): void {
     console.error('ErrorBoundary caught an error:', error, errorInfo);
-    this.setState({ errorInfo });
+    this.setState({ 
+      hasError: true,
+      error: error,
+      errorInfo: errorInfo 
+    });
   }
 
-  handleReset = () => {
-    this.setState({ hasError: false, error: null, errorInfo: null });
+  handleReset = (): void => {
+    this.setState({ 
+      hasError: false, 
+      error: null, 
+      errorInfo: null 
+    });
   };
 
-  handleReload = () => {
+  handleReload = (): void => {
     window.location.reload();
   };
 
-  render() {
+  render(): React.ReactNode {
     if (this.state.hasError) {
       if (this.props.fallback) {
         return this.props.fallback;

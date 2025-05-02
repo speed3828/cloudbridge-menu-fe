@@ -20,4 +20,16 @@ declare module 'next/server' {
     status: number;
     statusText: string;
   }
+}
+
+declare module 'next' {
+  export interface Metadata {
+    title?: string | null;
+    description?: string | null;
+    keywords?: string | string[] | null;
+    icons?: any;
+    openGraph?: any;
+    twitter?: any;
+    [key: string]: any;
+  }
 } 

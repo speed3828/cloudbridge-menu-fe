@@ -19,6 +19,21 @@ declare module 'react' {
     type Key = string | number;
     type JSXElementConstructor<P> = ((props: P) => ReactElement | null);
     
+    // Component class for class-based components
+    class Component<P = {}, S = {}> {
+      constructor(props: P);
+      readonly props: P;
+      state: S;
+      setState(state: S | ((prevState: S, props: P) => S), callback?: () => void): void;
+      forceUpdate(callback?: () => void): void;
+      render(): ReactNode;
+    }
+    
+    // Error Boundary related interfaces
+    interface ErrorInfo {
+      componentStack: string;
+    }
+    
     // 기타 필요한 타입 정의
   }
 }
@@ -63,4 +78,10 @@ declare module "react" {
     Provider: React.ComponentType<{ value: T; children?: React.ReactNode }>;
     Consumer: React.ComponentType<{ children: (value: T) => React.ReactNode }>;
   }
+  
+  // Re-export Component class
+  export class Component<P = {}, S = {}> extends React.Component<P, S> {}
+  
+  // Re-export ErrorInfo interface
+  export interface ErrorInfo extends React.ErrorInfo {}
 } 
