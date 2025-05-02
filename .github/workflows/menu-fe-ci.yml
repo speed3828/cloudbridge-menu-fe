@@ -14,6 +14,9 @@ env:
   REGISTRY: docker.io
   IMAGE_NAME: ${{ github.repository_owner }}/platform-menu-fe
   KUBE_NAMESPACE: cloudbridge-staging
+  GKE_CLUSTER: my-gke-cluster
+  GKE_ZONE: asia-northeast3
+  GKE_PROJECT: youtube-automation-123
 
 jobs:
   build:
@@ -56,12 +59,19 @@ jobs:
           push: true
           tags: ${{ env.IMAGE_NAME }}:${{ github.sha }}
 
-      # Make sure KUBE_CONFIG is set in GitHub repository secrets
-      - name: Update Kubernetes resources
-        uses: azure/k8s-set-context@v3
+      # GKE 인증 설정 (서비스 계정 키 사용)
+      - name: Google Auth
+        id: auth
+        uses: google-github-actions/auth@v1
         with:
-          method: kubeconfig
-          kubeconfig: ${{ secrets.KUBE_CONFIG }}
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - name: Set up GKE credentials
+        uses: google-github-actions/get-gke-credentials@v1
+        with:
+          cluster_name: ${{ env.GKE_CLUSTER }}
+          location: ${{ env.GKE_ZONE }}
+          project_id: ${{ env.GKE_PROJECT }}
           
       - name: Deploy to Kubernetes
         run: |
