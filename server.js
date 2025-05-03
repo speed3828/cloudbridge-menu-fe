@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * Server launcher for cloudbridge-menu-fe
- * Enforces running on port 4000 and handles connection rejections
+ * Enforces running on port 4200 and handles connection rejections
  */
 const path = require('path');
 
