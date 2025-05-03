@@ -1,7 +1,7 @@
 const { exec } = require('child_process');
 const os = require('os');
 
-const PORT = 4000;
+const PORT = 4200;
 const isWindows = os.platform() === 'win32';
 
 console.log(`Checking if port ${PORT} is in use...`);

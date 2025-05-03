@@ -2,7 +2,7 @@ const { spawn, execSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 
-const PORT = 4000;
+const PORT = 4200;
 const MAX_RESTART_ATTEMPTS = 5;
 const RESTART_DELAY_MS = 3000;
 
@@ -81,7 +81,7 @@ function handleServerFailure(errorMessage) {
   } else {
     console.error('Maximum restart attempts reached. Server could not be started.');
     console.error('Please check the following:');
-    console.error('1. Are there any other processes using port 4000?');
+    console.error('1. Are there any other processes using port 4200?');
     console.error('2. Is there a network configuration issue?');
     console.error('3. Check for Next.js compatibility issues with your code');
     console.error('\nPlease fix the issues and try again.');
