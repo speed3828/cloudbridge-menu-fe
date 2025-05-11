@@ -1,8 +1,12 @@
 'use client';
 
-import * as React from 'react';
+import React from 'react';
 
-const SkeletonCard = () => (
+interface SkeletonCardProps {
+  index?: number;
+}
+
+const SkeletonCard = ({ index }: SkeletonCardProps) => (
   <div className="bg-white rounded-lg shadow-md overflow-hidden animate-pulse">
     <div className="h-48 bg-gray-200" />
     <div className="p-4">
@@ -17,7 +21,9 @@ export default function SkeletonList() {
   return (
     <div className="grid gap-4 p-4 md:grid-cols-2 lg:grid-cols-3">
       {Array.from({ length: 6 }).map((_, index) => (
-        <SkeletonCard key={index} />
+        <React.Fragment key={index}>
+          <SkeletonCard index={index} />
+        </React.Fragment>
       ))}
     </div>
   );

@@ -1,52 +1,66 @@
 'use client';
 
-import { ReactNode } from 'react';
-// @ts-ignore: Temporarily ignore missing exports
+import React from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+import { ApiErrorHandler } from '@/lib/api/error';
+import { useToast } from '@/hooks/useToast';
 
-// 에러 메시지에서 Request ID 부분을 제거하는 함수
-const sanitizeErrorMessage = (message: string): string => {
-  if (!message) return '알 수 없는 오류가 발생했습니다.';
-  
-  // Request ID 부분 제거
-  if (message.includes('Request ID:')) {
-    return '서버 연결에 실패했습니다. 잠시 후 다시 시도해주세요.';
-  }
-  
-  // 영어 오류 메시지 한글로 변환
-  if (message.includes('Connection failed') || 
-      message.includes('check your internet connection') ||
-      message.includes('VPN')) {
-    return '서버 연결에 실패했습니다. 잠시 후 다시 시도해주세요.';
-  }
-  
-  return message;
-};
+interface QueryErrorHandlerProps {
+  children: React.ReactNode;
+}
 
-// 기본 쿼리 클라이언트 생성
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      refetchOnWindowFocus: false,
-      retry: 1,
-      onError: (error: unknown) => {
-        // 에러 처리 로직
-        console.error('Query error:', error);
+// Create a context-aware QueryErrorHandler
+const QueryErrorHandler: React.FC<QueryErrorHandlerProps> = ({ children }) => {
+  const toast = useToast();
+  
+  // Global query error handler
+  const handleError = (error: unknown) => {
+    // Log all errors in development
+    if (process.env.NODE_ENV === 'development') {
+      console.error('[Query Error]:', error);
+    }
+    
+    // Show toast notifications for API and network errors
+    if (ApiErrorHandler.isApiError(error) || ApiErrorHandler.isNetworkError(error)) {
+      toast.error(ApiErrorHandler.getErrorMessage(error));
+    }
+  };
+  
+  // Create the query client inside the component to access the toast context
+  const queryClient = React.useMemo(() => new QueryClient({
+    defaultOptions: {
+      queries: {
+        refetchOnWindowFocus: false,
+        retry: (failureCount, error) => {
+          // Don't retry on client errors (4xx)
+          if (ApiErrorHandler.isApiError(error) && ApiErrorHandler.getHttpStatus(error) < 500) {
+            return false;
+          }
+          // Retry server errors and network errors a maximum of 3 times
+          return failureCount < 3;
+        },
+        onError: handleError,
+      },
+      mutations: {
+        onError: handleError,
       },
     },
-    mutations: {
-      onError: (error: unknown) => {
-        // 에러 처리 로직
-        console.error('Mutation error:', error);
-      },
-    },
-  },
-});
-
-export function QueryProvider({ children }: { children: ReactNode }) {
+  }), [toast]);
+  
   return (
     <QueryClientProvider client={queryClient}>
       {children}
+      {process.env.NODE_ENV === 'development' && <ReactQueryDevtools />}
     </QueryClientProvider>
+  );
+};
+
+// Export the QueryProvider that uses the context-aware QueryErrorHandler
+export function QueryProvider({ children }: { children: React.ReactNode }) {
+  return (
+    <QueryErrorHandler>
+      {children}
+    </QueryErrorHandler>
   );
 } 

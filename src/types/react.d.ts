@@ -1,87 +1,158 @@
-// React와 ReactDOM 타입 정의
-declare module 'react' {
-  export = React;
-  export as namespace React;
+// React type definitions
+
+import * as React from 'react';
+
+// jsx-runtime에 대한 타입 정의 추가
+declare module 'react/jsx-runtime' {
+  export namespace JSX {
+    interface Element extends React.ReactElement<any, any> {}
+    interface ElementClass extends React.Component<any> {
+      render(): React.ReactNode;
+    }
+    interface ElementAttributesProperty {
+      props: {};
+    }
+    interface ElementChildrenAttribute {
+      children: {};
+    }
+    interface IntrinsicElements {
+      [elemName: string]: any;
+    }
+  }
   
+  export function jsx(
+    type: React.ElementType,
+    props: any,
+    key?: React.Key | null | undefined
+  ): React.ReactElement;
+  
+  export function jsxs(
+    type: React.ElementType, 
+    props: any, 
+    key?: React.Key | null | undefined
+  ): React.ReactElement;
+}
+
+declare global {
+  namespace JSX {
+    interface Element extends React.ReactElement<any, any> {}
+    interface ElementClass extends React.Component<any> {
+      render(): React.ReactNode;
+    }
+    interface ElementAttributesProperty {
+      props: {};
+    }
+    interface ElementChildrenAttribute {
+      children: {};
+    }
+    interface IntrinsicElements {
+      [elemName: string]: any;
+    }
+  }
+
   namespace React {
-    // 필요한 React 타입 정의
+    interface FormEvent<T = Element> extends SyntheticEvent<T> {
+      target: EventTarget & T;
+    }
+
+    interface ChangeEvent<T = Element> extends SyntheticEvent<T> {
+      target: EventTarget & T;
+    }
+
+    interface SyntheticEvent<T = Element, E = Event> {
+      bubbles: boolean;
+      cancelable: boolean;
+      currentTarget: EventTarget & T;
+      defaultPrevented: boolean;
+      eventPhase: number;
+      isTrusted: boolean;
+      nativeEvent: E;
+      preventDefault(): void;
+      stopPropagation(): void;
+      target: EventTarget & T;
+      timeStamp: number;
+      type: string;
+    }
+
+    type FC<P = {}> = FunctionComponent<P>;
     interface FunctionComponent<P = {}> {
-      (props: P, context?: any): ReactElement<any, any> | null;
+      (props: P & { children?: React.ReactNode }): React.ReactElement | null;
       displayName?: string;
     }
-    
-    interface ReactElement<P = any, T extends string | JSXElementConstructor<any> = string | JSXElementConstructor<any>> {
-      type: T;
-      props: P;
-      key: Key | null;
-    }
-    
-    type Key = string | number;
-    type JSXElementConstructor<P> = ((props: P) => ReactElement | null);
-    
-    // Component class for class-based components
-    class Component<P = {}, S = {}> {
-      constructor(props: P);
-      readonly props: P;
-      state: S;
-      setState(state: S | ((prevState: S, props: P) => S), callback?: () => void): void;
-      forceUpdate(callback?: () => void): void;
-      render(): ReactNode;
-    }
-    
-    // Error Boundary related interfaces
-    interface ErrorInfo {
-      componentStack: string;
-    }
-    
-    // 기타 필요한 타입 정의
   }
 }
 
-declare module 'react-dom' {
+declare module 'react' {
+  export type HTMLAttributes<T> = React.HTMLAttributes<T>;
+  export type ReactNode = React.ReactNode;
+  export type Component<P = {}, S = {}> = React.Component<P, S>;
+  export type ErrorInfo = React.ErrorInfo;
+  export type FC<P = {}> = React.FC<P>;
+  export type CSSProperties = React.CSSProperties;
+  export type MouseEvent<T = Element> = React.MouseEvent<T>;
+  export type ChangeEvent<T = Element> = React.ChangeEvent<T>;
+  export type FormEvent<T = Element> = React.FormEvent<T>;
+  export type Suspense = React.Suspense;
+  
+  export const useState: typeof React.useState;
+  export const useEffect: typeof React.useEffect;
+  export const useCallback: typeof React.useCallback;
+  export const useMemo: typeof React.useMemo;
+  export const useRef: typeof React.useRef;
+  export const useContext: typeof React.useContext;
+  export const useReducer: typeof React.useReducer;
+  export const useLayoutEffect: typeof React.useLayoutEffect;
+
+  export interface FormEvent<T = Element> extends SyntheticEvent<T> {
+    target: EventTarget & T;
+  }
+
+  export interface ChangeEvent<T = Element> extends SyntheticEvent<T> {
+    target: EventTarget & T;
+  }
+
+  export interface SyntheticEvent<T = Element, E = Event> {
+    bubbles: boolean;
+    cancelable: boolean;
+    currentTarget: EventTarget & T;
+    defaultPrevented: boolean;
+    eventPhase: number;
+    isTrusted: boolean;
+    nativeEvent: E;
+    preventDefault(): void;
+    stopPropagation(): void;
+    target: EventTarget & T;
+    timeStamp: number;
+    type: string;
+  }
+}
+
+// React와 관련된 타입 선언을 보완하는 파일
+
+// 이 파일은 TypeScript가 React 모듈을 import React from 'react' 형태로
+// 가져올 수 있도록 하는 보조 선언입니다.
+declare module 'react' {}
+
+// react-error-boundary와 관련된 타입 확장
+declare module 'react-error-boundary' {
   import * as React from 'react';
-  
-  function render(element: React.ReactElement, container: Element | null): void;
-  function hydrate(element: React.ReactElement, container: Element | null): void;
-  
-  // 기타 필요한 타입 정의
-  
-  export = ReactDOM;
-  export as namespace ReactDOM;
-  
-  namespace ReactDOM {
-    function render(element: React.ReactElement, container: Element | null): void;
-    function hydrate(element: React.ReactElement, container: Element | null): void;
-  }
-}
 
-// React 모듈 재정의
-declare module "react" {
-  export function useState<T>(initialState: T | (() => T)): [T, (newState: T | ((prevState: T) => T)) => void];
-  export function useEffect(effect: () => (void | (() => void)), deps?: readonly any[]): void;
-  export function useCallback<T extends (...args: any[]) => any>(callback: T, deps: readonly any[]): T;
-  export function useMemo<T>(factory: () => T, deps: readonly any[]): T;
-  export function useContext<T>(context: React.Context<T>): T;
-  export function createContext<T>(defaultValue: T): React.Context<T>;
-  export function forwardRef<T, P>(render: (props: P, ref: React.Ref<T>) => React.ReactElement | null): (props: P & { ref?: React.Ref<T> }) => React.ReactElement | null;
-  export function memo<P>(component: React.ComponentType<P>): React.ComponentType<P>;
-
-  export type ReactNode = React.ReactElement | string | number | boolean | null | undefined | readonly ReactNode[];
-  export type ComponentType<P = {}> = React.Component<P> | React.FunctionComponent<P>;
-  export type ReactElement = {
-    type: any;
-    props: any;
-    key: string | null;
-  };
-  export type Ref<T> = { current: T | null } | ((instance: T | null) => void) | null;
-  export interface Context<T> {
-    Provider: React.ComponentType<{ value: T; children?: React.ReactNode }>;
-    Consumer: React.ComponentType<{ children: (value: T) => React.ReactNode }>;
+  export interface FallbackProps {
+    error: Error;
+    resetErrorBoundary: (...args: any[]) => void;
   }
-  
-  // Re-export Component class
-  export class Component<P = {}, S = {}> extends React.Component<P, S> {}
-  
-  // Re-export ErrorInfo interface
-  export interface ErrorInfo extends React.ErrorInfo {}
+
+  export interface ErrorBoundaryProps {
+    fallback?: React.ReactNode;
+    fallbackRender?: (props: FallbackProps) => React.ReactNode;
+    FallbackComponent?: React.ComponentType<FallbackProps>;
+    onError?: (error: Error, info: { componentStack: string }) => void;
+    onReset?: (...args: any[]) => void;
+    resetKeys?: any[];
+    onResetKeysChange?: (prevResetKeys: any[] | undefined, resetKeys: any[] | undefined) => void;
+    children?: React.ReactNode;
+  }
+
+  // 기존 class 정의 대신 함수형 컴포넌트로 정의
+  export const ErrorBoundary: React.FC<ErrorBoundaryProps>;
 } 
