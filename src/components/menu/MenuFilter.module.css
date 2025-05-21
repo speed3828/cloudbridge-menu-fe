@@ -1,0 +1,239 @@
+/* MenuFilter 스타일 */
+
+.filterContainer {
+  background-color: white;
+  border-radius: 0.5rem;
+  padding: 1.25rem;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08);
+}
+
+.filterHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.25rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.filterTitle {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #343a40;
+  margin: 0;
+}
+
+.clearButton {
+  background: none;
+  border: none;
+  color: #4263eb;
+  font-size: 0.875rem;
+  cursor: pointer;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  transition: background-color 0.2s;
+}
+
+.clearButton:hover {
+  background-color: #edf2ff;
+}
+
+/* 필터 섹션 */
+.filterSection {
+  margin-bottom: 1.5rem;
+}
+
+.sectionTitle {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #495057;
+  margin: 0 0 0.75rem 0;
+}
+
+/* 검색 필터 */
+.searchBox {
+  position: relative;
+}
+
+.searchInput {
+  width: 100%;
+  padding: 0.5rem 2rem 0.5rem 0.75rem;
+  border: 1px solid #dee2e6;
+  border-radius: 0.25rem;
+  font-size: 0.875rem;
+  transition: border-color 0.2s;
+}
+
+.searchInput:focus {
+  outline: none;
+  border-color: #91a7ff;
+  box-shadow: 0 0 0 3px rgba(66, 99, 235, 0.1);
+}
+
+.searchIcon {
+  position: absolute;
+  right: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #adb5bd;
+  pointer-events: none;
+}
+
+/* 카테고리 필터 */
+.categoryContainer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.categoryButton {
+  background-color: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 0.25rem;
+  padding: 0.375rem 0.75rem;
+  font-size: 0.875rem;
+  color: #495057;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.categoryButton:hover {
+  background-color: #e9ecef;
+}
+
+.categoryActive {
+  background-color: #4263eb;
+  border-color: #4263eb;
+  color: white;
+}
+
+.categoryActive:hover {
+  background-color: #3b5bdb;
+}
+
+/* 태그 필터 */
+.tagsContainer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.tagLabel {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.375rem 0.75rem;
+  background-color: #f8f9fa;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.tagLabel:hover {
+  background-color: #e9ecef;
+}
+
+.tagActive {
+  background-color: #edf2ff;
+  color: #4263eb;
+}
+
+.tagCheckbox {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.tagName {
+  font-size: 0.875rem;
+}
+
+/* 가격 범위 필터 */
+.priceRangeContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.priceLabels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.75rem;
+  color: #868e96;
+}
+
+.priceButtons {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.priceButton {
+  flex: 1;
+  background-color: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 0.25rem;
+  padding: 0.375rem 0.25rem;
+  font-size: 0.75rem;
+  color: #495057;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: center;
+}
+
+.priceButton:hover {
+  background-color: #e9ecef;
+}
+
+.priceActive {
+  background-color: #4263eb;
+  border-color: #4263eb;
+  color: white;
+}
+
+.priceActive:hover {
+  background-color: #3b5bdb;
+}
+
+/* 유효성 필터 */
+.availabilityLabel {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  font-size: 0.875rem;
+  color: #495057;
+}
+
+.availabilityCheckbox {
+  width: 1rem;
+  height: 1rem;
+  border-radius: 0.25rem;
+  border: 1px solid #ced4da;
+  appearance: none;
+  cursor: pointer;
+  position: relative;
+  transition: background-color 0.2s, border-color 0.2s;
+}
+
+.availabilityCheckbox:checked {
+  background-color: #4263eb;
+  border-color: #4263eb;
+}
+
+.availabilityCheckbox:checked::after {
+  content: '';
+  position: absolute;
+  left: 5px;
+  top: 2px;
+  width: 4px;
+  height: 8px;
+  border: solid white;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+.availabilityCheckbox:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(66, 99, 235, 0.1);
+} 
