@@ -1,10 +1,14 @@
 'use client';
 
-import { useState } from 'react';
+import * as React from 'react';
 import { Sidebar } from './Sidebar';
 
-export const MenuLayout = ({ children }: { children: React.ReactNode }) => {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+interface MenuLayoutProps {
+  children: React.ReactNode;
+}
+
+export const MenuLayout: React.FC<MenuLayoutProps> = ({ children }) => {
+  const [sidebarOpen, setSidebarOpen] = React.useState(false);
 
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);

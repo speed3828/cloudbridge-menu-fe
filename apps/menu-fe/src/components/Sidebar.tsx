@@ -3,7 +3,7 @@
 import * as React from 'react';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
-import { SECTIONS, MenuSection } from '../config/sections';
+import { SECTIONS, MenuSection } from '@/config/sections';
 
 interface SidebarProps {
   isOpen: boolean;
